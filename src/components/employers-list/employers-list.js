@@ -3,9 +3,9 @@ import "./employers-list.css";
 
 const EmployersList = ({data}) => {
 
-    const elements = data.map( (item, i) => {
-        const {...itemProps} = item;                          //!частичная деструктуризация
-        return <EmployersListItem key={i} {...itemProps}/>
+    const elements = data.map( item => {
+        const {id, ...itemProps} = item;                          //!частичная деструктуризация
+        return <EmployersListItem key={id} {...itemProps}/>
         
                 //<EmployersListItem                              //второй способ
                     //key={item.id}
