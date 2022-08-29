@@ -13,52 +13,67 @@ class App extends Component {
         super(props)
         this.state = {
             data: [
-                {name: 'Jhon', salary: 800, increase: false, id: 1},
-                {name: 'Gary', salary: 2000, increase: false, id: 2},
-                {name: 'Serg', salary: 5000, increase: false, id: 3},
+                {name: 'Jhon', salary: 800, increase: false, rise: true, id: 1},
+                {name: 'Gary', salary: 2000, increase: true, rece: false, id: 2},
+                {name: 'Serg', salary: 5000, increase: false, rece: false, id: 3},
             ]
         }
     };
 
+    onToggleProp = (id, prop) => {
+        //!первый способ
+        //this.setState(({data}) => {
+            //const index = data.findIndex(elem => elem.id === id);
+
+            //const oldItem = data[index];
+            //const newItem = {...oldItem, increase: !oldItem.increase}
+            //const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)];
+            //console.log('newArr: ', newArr);
+
+            //return {data: newArr}
+        //});
+
+        this.setState(({data}) => ({
+            data: data.map(item => {                              //map возвращает новый масив с копиями обьектов
+                if(item.id === id){                                  
+                    return {...item, [prop]: !item[prop]}         //возвр obj с изменненым incrase на противоположный
+                }
+                return item;                                      //возвращаем остальные обьекты в масисив
+            })
+        }));
+    };
 
     addEmployers = (obj) => {
         this.setState(({data}) => {
-            obj.id = Date.now();                                         //генерация уникального id 
-            const newItem = [...data, obj]
-            return {
-                data: newItem
+            if(obj.name !== '' && obj.salary !== '' ){
+                obj.id = Date.now();
+                obj.rise = false;                                       //генерация уникального id 
+                const newItem = [...data, obj];
+                return {
+                    data: newItem
+                }
             }
+            
         });
     };
 
     deleteItem = (id) => {
         this.setState(({data}) => {
-
-            //!Напрямую удалать state нельза, поэтому создаем копию массива
-
-            //1 способ
-            //const index = data.findIndex(elem => elem.id === id);     //ищем индекс обьекта в массиве data по совпадению id
-
-            //const before = data.slice(0, index);                      //копируем массив до элемента[index]
-            //const after = data.slice(index + 1)                       //после элемента[index]
-
-            //const newArr = [...before, ...after];                     //получаем один общий массив без элемент[index]
-            //return {
-            //    data: newArr
-            //};
-
-            //2 способ 
             return {
-                data: data.filter(elem => elem.id !== id)               // записываем если id в эл массива не совпадает с получ id 
+                data: data.filter(elem => elem.id !== id)            // записываем если id в эл массива не совпадает с получ id 
             }
         });
     };
 
     render() {
-    
+        const employers = this.state.data.length                              
+        const increased = this.state.data.filter( item => item.increase).length //все обьекты массива в котором increace == true
+
         return (
             <div className="app">
-                <AppInfo/>
+                <AppInfo 
+                    employers={employers}
+                    increased={increased} />
     
                 <div className="search-panel">
                     <SearchPanel/>
@@ -67,7 +82,8 @@ class App extends Component {
     
                 <EmployersList 
                     data = {this.state.data} 
-                    onDelete={this.deleteItem} />
+                    onDelete={this.deleteItem}
+                    onToggleProp={this.onToggleProp} />
     
                 <EmployersAddForm
                     onAdd={this.addEmployers} />
