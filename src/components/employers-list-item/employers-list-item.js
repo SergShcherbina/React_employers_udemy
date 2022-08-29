@@ -3,7 +3,6 @@ import "./employers-list-item.css";
 
 
 class EmployersListItem extends Component {
-//({name, salary, increase, id})
     constructor(props){
         super(props);
         this.state = {                                                   //!состояние котрое можно менять
@@ -24,9 +23,8 @@ class EmployersListItem extends Component {
 
 
     render() {
-        const {name, salary} = this.props;
+        const {name, salary, onDelete } = this.props;
         const {increase, like} = this.state;
-        console.log('like: ', like);
 
         let classNames = "list-group-item d-flex justify-content-between";  
         if(increase) {                                                   //добавление класса в зависимости от состояния
@@ -48,7 +46,7 @@ class EmployersListItem extends Component {
                     </button>
 
                     <button type="button"
-                            className="btn-trash btn-sm ">
+                            className="btn-trash btn-sm " onClick={onDelete}>
                         <i className="fas fa-trash"></i>
                     </button>
                     <i className="fas fa-star"></i>
