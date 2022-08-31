@@ -17,7 +17,8 @@ class App extends Component {
                 {name: 'Gary', salary: 2000, increase: true, rece: false, id: 2},
                 {name: 'Serg', salary: 5000, increase: false, rece: false, id: 3},
             ], 
-            term: '',
+            term: '', 
+            filter: 'all'
         }
     };
 
@@ -32,7 +33,7 @@ class App extends Component {
         }));
     };
 
-    addEmployers = (obj) => {
+    addEmployers = (obj) => {                                    
         this.setState(({data}) => {
             if(obj.name !== '' && obj.salary !== '' ){
                 obj.id = Date.now();
@@ -60,6 +61,21 @@ class App extends Component {
         this.setState({term})
     }
 
+    filterPost = (items, filter) => {
+        switch (filter){
+            case 'rise':
+                return items.filter(item => item.rise);
+            case 'salaryIs1000':
+                return items.filter(item => item.salary > 1000);
+            default:
+                return items
+        }
+    };
+
+    filterVisible = (filter) => {                                  //изменяем сост filter на получ-е пр нажатии на btn в AppFilter
+        this.setState({filter})
+    }
+
     deleteItem = (id) => {
         this.setState(({data}) => {
             return {
@@ -71,8 +87,9 @@ class App extends Component {
     render() {
         const employers = this.state.data.length                              
         const increased = this.state.data.filter( item => item.increase).length //все обьекты массива в котором increace == true
-        const {data, term} = this.state;
-        const visibleData = this.searchEmp(data, term)           // переменная с результатом serchEmp, отфильтрованный массив
+        const {data, term, filter} = this.state;
+        const visibleData = this.filterPost(this.searchEmp(data, term), filter);
+        
 
         return (
             <div className="app">
@@ -82,7 +99,10 @@ class App extends Component {
     
                 <div className="search-panel">
                     <SearchPanel onUpdateSearch={this.onUpdateSearch}/>
-                    <AppFilter/>
+                    <AppFilter 
+                        filterVisible={this.filterVisible}
+                        filter={filter}
+                        />
                 </div>
     
                 <EmployersList 
