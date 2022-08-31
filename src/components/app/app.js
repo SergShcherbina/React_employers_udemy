@@ -16,23 +16,12 @@ class App extends Component {
                 {name: 'Jhon', salary: 800, increase: false, rise: true, id: 1},
                 {name: 'Gary', salary: 2000, increase: true, rece: false, id: 2},
                 {name: 'Serg', salary: 5000, increase: false, rece: false, id: 3},
-            ]
+            ], 
+            term: '',
         }
     };
 
     onToggleProp = (id, prop) => {
-        //!первый способ
-        //this.setState(({data}) => {
-            //const index = data.findIndex(elem => elem.id === id);
-
-            //const oldItem = data[index];
-            //const newItem = {...oldItem, increase: !oldItem.increase}
-            //const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)];
-            //console.log('newArr: ', newArr);
-
-            //return {data: newArr}
-        //});
-
         this.setState(({data}) => ({
             data: data.map(item => {                              //map возвращает новый масив с копиями обьектов
                 if(item.id === id){                                  
@@ -47,7 +36,7 @@ class App extends Component {
         this.setState(({data}) => {
             if(obj.name !== '' && obj.salary !== '' ){
                 obj.id = Date.now();
-                obj.rise = false;                                       //генерация уникального id 
+                obj.rise = false;                                 //генерация уникального id 
                 const newItem = [...data, obj];
                 return {
                     data: newItem
@@ -57,10 +46,24 @@ class App extends Component {
         });
     };
 
+    searchEmp = (items, term) => {                                //поиск по имени
+        if(term.length === 0){                                    //если поиск строка пустая, то возвращаем тот же массив
+            return items;
+        }
+
+        return items.filter( item => {                            //возвращаем те строки
+            return item.name.indexOf(term) > -1                   //которые содержат введенный текст(rtem)
+        });
+    };
+
+    onUpdateSearch = (term) => {                                  //изменяем сост term на получ-е из компонента Serch-panel
+        this.setState({term})
+    }
+
     deleteItem = (id) => {
         this.setState(({data}) => {
             return {
-                data: data.filter(elem => elem.id !== id)            // записываем если id в эл массива не совпадает с получ id 
+                data: data.filter(elem => elem.id !== id)         // записываем если id в эл массива не совпадает с получ id 
             }
         });
     };
@@ -68,6 +71,8 @@ class App extends Component {
     render() {
         const employers = this.state.data.length                              
         const increased = this.state.data.filter( item => item.increase).length //все обьекты массива в котором increace == true
+        const {data, term} = this.state;
+        const visibleData = this.searchEmp(data, term)           // переменная с результатом serchEmp, отфильтрованный массив
 
         return (
             <div className="app">
@@ -76,12 +81,12 @@ class App extends Component {
                     increased={increased} />
     
                 <div className="search-panel">
-                    <SearchPanel/>
+                    <SearchPanel onUpdateSearch={this.onUpdateSearch}/>
                     <AppFilter/>
                 </div>
     
                 <EmployersList 
-                    data = {this.state.data} 
+                    data = {visibleData} 
                     onDelete={this.deleteItem}
                     onToggleProp={this.onToggleProp} />
     
