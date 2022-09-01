@@ -18,7 +18,7 @@ class App extends Component {
                 {name: 'Serg', salary: 5000, increase: false, rece: false, id: 3},
             ], 
             term: '', 
-            filter: 'all'
+            filter: 'all',
         }
     };
 
@@ -61,7 +61,7 @@ class App extends Component {
         this.setState({term})
     }
 
-    filterPost = (items, filter) => {
+    filterPost = (items, filter) => {                             //фильтр на основании условия сравнения с переменной state.filter
         switch (filter){
             case 'rise':
                 return items.filter(item => item.rise);
@@ -84,12 +84,22 @@ class App extends Component {
         });
     };
 
+    idSalary = (id, itemSalary) => {
+        this.setState(({data}) => ({
+            data: data.map(item => {
+                if(item.id === id) {
+                    return {...item, salary: itemSalary}
+                }
+            return item
+            })
+        }));
+    };
+
     render() {
         const employers = this.state.data.length                              
         const increased = this.state.data.filter( item => item.increase).length //все обьекты массива в котором increace == true
         const {data, term, filter} = this.state;
         const visibleData = this.filterPost(this.searchEmp(data, term), filter);
-        
 
         return (
             <div className="app">
@@ -108,7 +118,9 @@ class App extends Component {
                 <EmployersList 
                     data = {visibleData} 
                     onDelete={this.deleteItem}
-                    onToggleProp={this.onToggleProp} />
+                    onToggleProp={this.onToggleProp} 
+                    idSalary={this.idSalary}
+                    />
     
                 <EmployersAddForm
                     onAdd={this.addEmployers} />
